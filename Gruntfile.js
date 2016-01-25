@@ -192,7 +192,7 @@ module.exports = function(grunt) {
                     transform: [
                         ["babelify", {
                             sourceMaps: true,
-                            presets: ["es2015", "stage-0", "react"]
+                            presets: ["react"]
                         }]
                     ]
                 },
