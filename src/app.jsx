@@ -10,7 +10,12 @@
 var React = require('react');
 var ReactDOM = require('react-dom');
 
+// let the store register itself to the actions it cares about
+var TodoStore = require('./stores/TodoStore').subscribe();
+
+//Components
 var TodoApp = require('./components/TodoApp');
+
 
 ReactDOM.render(
   <TodoApp />, document.getElementById('todoapp')

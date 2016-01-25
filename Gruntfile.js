@@ -6,11 +6,11 @@ module.exports = function(grunt) {
     grunt.registerTask('build-css', ['compass']);
 
     //JS
-    grunt.registerTask('build-babel-js', ['jshint', 'browserify']);
+    grunt.registerTask('build-babel-js', ['jshint', 'babel', 'browserify']);
 
 
     // build and watch, with un-minified DEV compiled code
-    grunt.registerTask('default', ['clean:dist',  'build-css', 'babel', 'build-babel-js', 'copy', 'watch']);
+    grunt.registerTask('default', ['clean:dist',  'build-css', 'build-babel-js', 'copy', 'watch']);
 
     // build and watch, with minified PRODUCTION compiled code
     grunt.registerTask('default-prod', ['clean:dist',  'build-css', 'build-babel-js', 'copy', 'uglify', 'watch']);
@@ -66,14 +66,7 @@ module.exports = function(grunt) {
                 }
             },
             js: {
-                files: ['<%= options.src %>/**/*.js'],
-                tasks: ['build-babel-js'],
-                options: {
-                    livereload: true
-                }
-            },
-            react: {
-                files: '<%= options.src %>/**/*.jsx',
+                files: ['<%= options.src %>/**/*.js', '<%= options.src %>/*.jsx', '<%= options.src %>/**/*.jsx'],
                 tasks: ['build-babel-js'],
                 options: {
                     livereload: true

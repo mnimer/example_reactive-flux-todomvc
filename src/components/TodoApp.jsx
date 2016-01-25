@@ -13,29 +13,13 @@ var Header = require('./Header');
 var MainSection = require('./MainSection');
 var TodoStore = require('./../stores/TodoStore');
 
-/**
- * Retrieve the current TODO data from the TodoStore
- */
-function getTodoState() {
-  return {
-    allTodos: TodoStore.getAll(),
-    areAllComplete: TodoStore.areAllComplete()
-  };
-}
+
 
 module.exports = React.createClass({
 
-  getInitialState: function() {
-    return getTodoState();
-  },
+  componentDidMount: function() { },
 
-  componentDidMount: function() {
-    TodoStore.addChangeListener(this._onChange);
-  },
-
-  componentWillUnmount: function() {
-    TodoStore.removeChangeListener(this._onChange);
-  },
+  componentWillUnmount: function() { },
 
   /**
    * @return {object}
@@ -44,21 +28,11 @@ module.exports = React.createClass({
     return (
       <div>
         <Header />
-        <MainSection
-          allTodos={this.state.allTodos}
-          areAllComplete={this.state.areAllComplete}
-        />
-        <Footer allTodos={this.state.allTodos} />
+        <MainSection/>
+        <Footer />
       </div>
     );
   },
-
-  /**
-   * Event handler for 'change' events coming from the TodoStore
-   */
-  _onChange: function() {
-    this.setState(getTodoState());
-  }
 
 });
 

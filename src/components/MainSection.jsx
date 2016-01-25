@@ -8,54 +8,83 @@
  */
 
 var React = require('react');
-var ReactPropTypes = React.PropTypes;
+var rx = require('rx');
+
+//action(s)
 var TodoActions = require('../actions/TodoActions');
+
+//store(s)
+var TodoStore = require('../stores/TodoStore');
+
+//components
 var TodoItem = require('./TodoItem');
+
 
 module.exports = React.createClass({
 
-  propTypes: {
-    allTodos: ReactPropTypes.object.isRequired,
-    areAllComplete: ReactPropTypes.bool.isRequired
-  },
+    getInitialState: function () {
+        return {
+            todos: [],
+            areAllComplete: false
+        };
+    },
 
-  /**
-   * @return {object}
-   */
-  render: function() {
-    // This section should be hidden by default
-    // and shown when there are todos.
-    if (Object.keys(this.props.allTodos).length < 1) {
-      return null;
-    }
 
-    var allTodos = this.props.allTodos;
-    var todos = [];
+    componentWillMount: function () {
 
-    for (var key in allTodos) {
-      todos.push(<TodoItem key={key} todo={allTodos[key]} />);
-    }
+        // listen for property changes in the store
+        this.todoListSubscription = TodoStore.todoList.subscribe(function (data_) {
+            this.state.todos = data_;
 
-    return (
-      <section id="main">
-        <input
-          id="toggle-all"
-          type="checkbox"
-          onChange={this._onToggleCompleteAll}
-          checked={this.props.areAllComplete ? 'checked' : ''}
-        />
-        <label htmlFor="toggle-all">Mark all as complete</label>
-        <ul id="todo-list">{todos}</ul>
-      </section>
-    );
-  },
+            //todo loop over and see if everything else is complete, if so flip the flag
 
-  /**
-   * Event handler to mark all TODOs as complete
-   */
-  _onToggleCompleteAll: function() {
-    TodoActions.toggleCompleteAll();
-  }
+            if (this.isMounted()) this.forceUpdate();
+        }.bind(this));
+    },
+
+
+    componentWillUnmount: function () {
+        if (this.todoListSubscription !== undefined)
+        {
+            this.todoListSubscription.dispose();
+        }
+    },
+
+
+    _toggleCompleteAll: function (e) {
+        TodoActions.toggleCompleteAll.onNext(true);
+    },
+
+
+
+    /**
+     * @return {object}
+     */
+    render: function () {
+
+        return (
+            <section id="main">
+                <input
+                    id="toggle-all"
+                    type="checkbox"
+                    onChange={this._toggleCompleteAll}
+                    checked={this.state.areAllComplete ? 'checked' : ''}
+                />
+                <label htmlFor="toggle-all">Mark all as complete</label>
+
+
+                <ul id="todo-list">
+                    {(() => {
+                        return this.state.todos.map(function(item_){
+                            return (
+                                <TodoItem key={item_.id} todo={item_}/>
+                            );
+                        });
+                    })(this)}
+                </ul>
+            </section>
+        );
+    },
 
 });
 
