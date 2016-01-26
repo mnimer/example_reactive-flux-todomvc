@@ -6,6 +6,13 @@ This is what a running Reactive Flux TodoMVC example with ReactJS & RxJS looks l
 
 
 ## Overview
+Branches:
+1. "master" - latest development version with all branches merged together
+2. "simple" - Initial version of the todo mvc app with everything in memory
+3. "with-services" - Adding onto the simple branch with stubbed in support for AJAX services
+
+
+## Overview
 
 
 ## Structure and Data Flow
