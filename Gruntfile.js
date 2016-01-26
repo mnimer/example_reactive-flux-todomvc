@@ -59,7 +59,7 @@ module.exports = function(grunt) {
                 }
             },
             sass: {
-                files: ['<%= options.src %/*.scss'],
+                files: ['<%= options.src %/*.scss', '<%= options.src %/**/*.scss'],
                 tasks: ['compass:dashboard', 'newer:copy:dashboard' ],
                 options: {
                     livereload: true

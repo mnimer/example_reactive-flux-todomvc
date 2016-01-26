@@ -22,7 +22,6 @@ module.exports = {
      */
     subscribe:function()
     {
-
         TodoActions.create.subscribe(function(data_){
             this._createTodoItem(data_);
         }.bind(this));
@@ -32,12 +31,10 @@ module.exports = {
         }.bind(this));
 
         TodoActions.destroy.subscribe(function(data_){
-            debugger;
             this._removeTodoItem(data_.item);
         }.bind(this));
 
         TodoActions.destroyCompleted.subscribe(function(data_){
-            debugger;
             this._removeCompletedTodoItems();
         }.bind(this));
 

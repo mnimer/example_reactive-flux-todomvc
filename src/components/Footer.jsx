@@ -18,12 +18,20 @@ module.exports = React.createClass({
         return {
             totalCount: 0,
             completeCount: 0,
-            completed: true
+            completed: true,
+            filter: "ALL"
         }
     },
 
 
     componentWillMount: function () {
+
+        this.filterSubscription = TodoActions.filter.subscribe(function(data_){
+            this.state.filter = data_.filter;
+            //refresh the UI
+            if (this.isMounted()) this.forceUpdate();
+        }.bind(this));
+
 
         // listen for property changes
         this.todoListSubscription = TodoStore.todoList.subscribe(function (data_) {
@@ -48,8 +56,12 @@ module.exports = React.createClass({
 
 
     componentWillUnmount: function () {
-        if (this.todoListSubscription !== undefined)
-        {
+
+        if (this.filterSubscription !== undefined) {
+            this.filterSubscription.dispose();
+        }
+
+        if (this.todoListSubscription !== undefined) {
             this.todoListSubscription.dispose();
         }
     },
@@ -77,24 +89,24 @@ module.exports = React.createClass({
                 </span>
 
                 <ul id="filters" className="filters">
-                    <li>
+                    <li >
                         <a
-                            href="#/"
-                            className="selected">
+                            onClick={() => TodoActions.filter.onNext({filter:'ALL'})}
+                            className={this.state.filter=="ALL"?'selected':''}>
                             All
                         </a>
                     </li>
-                    {' '}
                     <li>
                         <a
-                            href="#/active">
+                            onClick={() => TodoActions.filter.onNext({filter:'ACTIVE'})}
+                            className={this.state.filter=="ACTIVE"?'selected':''}>
                             Active
                         </a>
                     </li>
-                    {' '}
                     <li>
                         <a
-                            href="#/completed">
+                            onClick={() => TodoActions.filter.onNext({filter:'COMPLETED'})}
+                            className={this.state.filter=="COMPLETED"?'selected':''}>
                             Completed
                         </a>
                     </li>

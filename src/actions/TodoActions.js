@@ -14,6 +14,11 @@ var Rx = require("rx");
 module.exports = {
 
     /**
+     * trigger a new filter on the todo list
+     */
+    filter: new Rx.Subject(),
+
+    /**
      * Create new a new item in the list
      */
     create: new Rx.Subject(),

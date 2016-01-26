@@ -8,7 +8,7 @@
  */
 
 var React = require('react');
-var rx = require('rx');
+var Rx = require('rx');
 
 //action(s)
 var TodoActions = require('../actions/TodoActions');
@@ -25,6 +25,7 @@ module.exports = React.createClass({
     getInitialState: function () {
         return {
             todos: [],
+            filter: "ALL",
             areAllComplete: false
         };
     },
@@ -32,7 +33,19 @@ module.exports = React.createClass({
 
     componentWillMount: function () {
 
-        // listen for property changes in the store
+
+        /**
+         * Catch the filter event, and run the filter against the todoList Subject
+         */
+        this.filterSubscription = TodoActions.filter.subscribe(function(data_){
+            this.state.filter = data_.filter;
+            //refresh the UI
+            if (this.isMounted()) this.forceUpdate();
+        }.bind(this));
+
+        /**
+         * listen for property changes in the store
+         */
         this.todoListSubscription = TodoStore.todoList.subscribe(function (data_) {
             this.state.todos = data_;
 
@@ -56,6 +69,9 @@ module.exports = React.createClass({
 
     componentWillUnmount: function () {
 
+        if (this.filterSubscription !== undefined) {
+            this.filterSubscription.dispose();
+        }
         if (this.todoListSubscription !== undefined) {
             this.todoListSubscription.dispose();
         }
@@ -73,6 +89,29 @@ module.exports = React.createClass({
      */
     render: function () {
 
+        var _todoElements = [];
+        var _todos = Rx.Observable.from(this.state.todos);
+
+        // Add Filter, if needed and push all of the items that pass into a simple _todoElements array
+        if( this.state.filter == "ACTIVE"){
+            _todos.filter(function(x, idx, obs){
+                return !x.complete;
+            }).subscribe(function(item_){
+                _todoElements.push(item_);
+            });
+        }else if( this.state.filter == "COMPLETED"){
+            _todos.filter(function(x, idx, obs){
+                return x.complete;
+            }).subscribe(function(item_){
+                _todoElements.push(item_);
+            });
+        } else {
+            _todos.subscribe(function (item_) {
+                _todoElements.push(item_);
+            });
+        }
+
+
         return (
             <section id="main">
                 <input
@@ -85,13 +124,9 @@ module.exports = React.createClass({
 
 
                 <ul id="todo-list">
-                    {(() => {
-                        return this.state.todos.map(function(item_){
-                            return (
-                                <TodoItem key={item_.id} todo={item_}/>
-                            );
-                        });
-                    })()}
+                    {_todoElements.map(function(_item){
+                            return( <TodoItem key={_item.id} todo={_item}/> );
+                        })}
                 </ul>
             </section>
         );
