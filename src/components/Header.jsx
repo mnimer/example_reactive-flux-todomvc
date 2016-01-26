@@ -20,8 +20,13 @@ module.exports = React.createClass({
      * in different ways.
      * @param {string} text
      */
-    _save: function (text) {
-        TodoActions.create.onNext(text);
+    _save: function (text_) {
+
+        var _todo = {text: text_};
+
+        // call the actions that will trigger the service (notice the "source")
+        TodoActions.create.source.onNext(_todo);
+
     },
 
     /**

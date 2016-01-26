@@ -32,16 +32,21 @@ module.exports = React.createClass({
     },
 
     _onToggleComplete: function () {
-        TodoActions.toggleComplete.onNext({item:this.props.todo, complete:!this.props.todo.complete});
+        // update the property and trigger the action that will tell the service to update
+        this.props.todo.complete = !this.props.todo.complete;
+        TodoActions.update.source.onNext(this.props.todo);
     },
 
     _onSave: function (text_) {
-        TodoActions.updateText.onNext({item:this.props.todo, text:text_});
         this.setState({isEditing: false});
+        // update the property and trigger the action that will tell the service to update
+        item:this.props.todo.text = text_;
+        TodoActions.update.source.onNext(this.props.todo);
     },
 
     _onDestroyClick: function () {
-        TodoActions.destroy.onNext({item:this.props.todo});
+        //trigger the action to call the service and remove the item
+        TodoActions.destroy.source.onNext(this.props.todo);
     },
 
 

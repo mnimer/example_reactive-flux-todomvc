@@ -49,6 +49,7 @@ module.exports = React.createClass({
         this.todoListSubscription = TodoStore.todoList.subscribe(function (data_) {
             this.state.todos = data_;
 
+            debugger;
             //loop over and see if everything else is complete, if so flip the flag
             var allCompleted = true;
             for (var i = 0; i < data_.length; i++)

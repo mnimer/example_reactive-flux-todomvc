@@ -10,8 +10,13 @@
 var React = require('react');
 var ReactDOM = require('react-dom');
 
-// let the store register itself to the actions it cares about
+// load the stores and let the store subscribe to the actions it needs
 var TodoStore = require('./stores/TodoStore').subscribe();
+
+//load Services and let them subscribe to the actions they are watching
+var CreateService = require('./services/CreateService').subscribe();
+var UpdateService = require('./services/UpdateService').subscribe();
+var DeleteService = require('./services/DeleteService').subscribe();
 
 //Components
 var TodoApp = require('./components/TodoApp');

@@ -22,30 +22,33 @@ module.exports = {
      */
     subscribe:function()
     {
-        TodoActions.create.subscribe(function(data_){
-            this._createTodoItem(data_);
-        }.bind(this));
-
-        TodoActions.updateText.subscribe(function(data_){
-            this._updateTodoItem(data_.item, data_.text);
-        }.bind(this));
-
-        TodoActions.destroy.subscribe(function(data_){
-            this._removeTodoItem(data_.item);
-        }.bind(this));
-
         TodoActions.destroyCompleted.subscribe(function(data_){
             this._removeCompletedTodoItems();
-        }.bind(this));
-
-        TodoActions.toggleComplete.subscribe(function(data_){
-            this._toggleItem(data_.item, data_.complete);
         }.bind(this));
 
         TodoActions.toggleCompleteAll.subscribe(function(data_){
             this._toggleAll(data_.complete);
         }.bind(this));
+
+
+
+        //////////////////////////
+        // Listen for the results from the different Service Calls (notice the "sink" in the path)
+        //
+        TodoActions.create.sink.subscribe(function(data_){
+            this._createTodoItem(data_);
+        }.bind(this));
+
+        TodoActions.update.sink.subscribe(function(data_){
+            this._updateTodoItem(data_);
+        }.bind(this));
+
+        TodoActions.destroy.sink.subscribe(function(data_){
+            this._removeTodoItem(data_);
+        }.bind(this));
     },
+
+
 
 
     /**
@@ -53,41 +56,43 @@ module.exports = {
      * @param text_
      * @private
      */
-    _createTodoItem:function(text_)
+    _createTodoItem:function(item_)
     {
-        // Hand waving here -- not showing how this interacts with XHR or persistent
-        // server-side storage.
-        // Using the current timestamp + random number in place of a real id.
-        var _id = (+new Date() + Math.floor(Math.random() * 999999)).toString(36);
-        var _todo = {
-            id: _id,
-            complete: false,
-            text: text_
-        };
+        var list = this.todoList.getValue();
+        // add the new _todo item to the array stored in the todoList subject
+        list.push(item_);
 
-        if( _todo.text.length > 0 ) // don't add empty items
-        {
-            // add the new _todo item to the array stored in the todoList subject
-            this.todoList.getValue().push(_todo);
-        }
         //reset the value in the subject to trigger all subscribers
-        this.todoList.onNext( this.todoList.getValue() );
+        this.todoList.onNext( list );
     },
 
 
     /**
      * Update the todo item text
+     *
      * @param item_
      * @param text_
      * @private
      */
     _updateTodoItem: function( item_, text_ ){
-
-        item_.text = text_;
         var list = this.todoList.getValue();
+        var newList = [];
+
+        for (var i = 0; i < list.length; i++)
+        {
+            debugger;
+            var todo = list[i];
+            if( todo.id === item_.id )
+            {
+                // add the new item instead of what's in the array
+                newList.push(item_);
+            }else{
+                newList.push(todo);
+            }
+        }
 
         //reset the value in the subject to trigger all subscribers
-        this.todoList.onNext( list );
+        this.todoList.onNext( newList );
     },
 
 
@@ -105,6 +110,7 @@ module.exports = {
         for (var i = 0; i < list.length; i++)
         {
             var todo = list[i];
+            // add everything but the one that was deleted
             if( todo.id !== item_.id )
             {
                 newList.push(todo);
@@ -114,7 +120,6 @@ module.exports = {
         //reset the value in the subject to trigger all subscribers
         this.todoList.onNext( newList );
     },
-
 
     /**
      * Update the todo item text
@@ -129,30 +134,14 @@ module.exports = {
         for (var i = 0; i < list.length; i++)
         {
             var todo = list[i];
-            if( !todo.complete )
+            if( todo.complete )
             {
-                newList.push(todo);
+                // call the destroy service for each item that has been marked complete
+                TodoActions.destroy.source.onNext(todo);
             }
         }
-
-        //reset the value in the subject to trigger all subscribers
-        this.todoList.onNext( newList );
     },
 
-
-    /**
-     * Set the completed flag for a single item
-     * @param item_
-     * @param toggle_
-     * @private
-     */
-    _toggleItem: function( item_, completed_ ){
-        var list = this.todoList.getValue();
-        item_.complete = completed_; //update reference
-
-        //reset the value in the subject to trigger all subscribers
-        this.todoList.onNext( list );
-    },
 
 
     /**
@@ -167,9 +156,11 @@ module.exports = {
         {
             var todo = list[i];
             todo.complete = completed_;
+
+            // Call the update service to save the changes
+            TodoActions.update.source.onNext(todo);
         }
 
-        debugger;
         //reset the value in the subject to trigger all subscribers
         this.todoList.onNext( list );
     }
