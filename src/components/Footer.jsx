@@ -30,6 +30,17 @@ module.exports = React.createClass({
             this.state.todos = data_;
 
             //todo loop over and see if everything else is complete, if so flip the flag
+            this.state.totalCount = data_.length;
+
+            this.state.completeCount = 0;
+            for (var i = 0; i < data_.length; i++)
+            {
+                var item = data_[i];
+                if( item.complete ){
+                    this.state.completeCount++;
+                }
+            }
+
 
             if (this.isMounted()) this.forceUpdate();
         }.bind(this));
@@ -47,7 +58,7 @@ module.exports = React.createClass({
      * Event handler to delete all completed TODOs
      */
     _onClearCompletedClick: function () {
-        TodoActions.destroyCompleted.onNext();
+        TodoActions.destroyCompleted.onNext(true);
     },
 
 
@@ -96,7 +107,7 @@ module.exports = React.createClass({
                             <button
                                 id="clear-completed"
                                 onClick={this._onClearCompletedClick}>
-                                Clear completed ({completed})
+                                Clear completed ({this.state.completeCount})
                             </button>
                         );
                     }

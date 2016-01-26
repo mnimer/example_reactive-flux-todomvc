@@ -36,23 +36,34 @@ module.exports = React.createClass({
         this.todoListSubscription = TodoStore.todoList.subscribe(function (data_) {
             this.state.todos = data_;
 
-            //todo loop over and see if everything else is complete, if so flip the flag
+            //loop over and see if everything else is complete, if so flip the flag
+            var allCompleted = true;
+            for (var i = 0; i < data_.length; i++)
+            {
+                var item = data_[i];
+                if( !item.complete ){
+                    allCompleted = false;
+                    break;
+                }
+            }
+            this.state.areAllComplete = allCompleted;
 
+            //refresh the UI
             if (this.isMounted()) this.forceUpdate();
         }.bind(this));
     },
 
 
     componentWillUnmount: function () {
-        if (this.todoListSubscription !== undefined)
-        {
+
+        if (this.todoListSubscription !== undefined) {
             this.todoListSubscription.dispose();
         }
     },
 
 
     _toggleCompleteAll: function (e) {
-        TodoActions.toggleCompleteAll.onNext(true);
+        TodoActions.toggleCompleteAll.onNext({complete:!this.state.areAllComplete});
     },
 
 
@@ -80,7 +91,7 @@ module.exports = React.createClass({
                                 <TodoItem key={item_.id} todo={item_}/>
                             );
                         });
-                    })(this)}
+                    })()}
                 </ul>
             </section>
         );

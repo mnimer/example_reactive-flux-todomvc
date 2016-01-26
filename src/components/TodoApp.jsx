@@ -14,25 +14,26 @@ var MainSection = require('./MainSection');
 var TodoStore = require('./../stores/TodoStore');
 
 
-
 module.exports = React.createClass({
 
-  componentDidMount: function() { },
+    componentDidMount: function () {
+    },
 
-  componentWillUnmount: function() { },
+    componentWillUnmount: function () {
+    },
 
-  /**
-   * @return {object}
-   */
-  render: function() {
-    return (
-      <div>
-        <Header />
-        <MainSection/>
-        <Footer />
-      </div>
-    );
-  },
+    /**
+     * @return {object}
+     */
+    render: function () {
+        return (
+            <div>
+                <Header />
+                <MainSection/>
+                <Footer />
+            </div>
+        );
+    },
 
 });
 

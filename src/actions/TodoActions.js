@@ -12,11 +12,35 @@
 var Rx = require("rx");
 
 module.exports = {
+
+    /**
+     * Create new a new item in the list
+     */
     create: new Rx.Subject(),
+
+    /**
+     * Edit a single item
+     */
     updateText: new Rx.Subject(),
+
+    /**
+     * Mark a single item complete
+     */
     toggleComplete: new Rx.Subject(),
+
+    /**
+     * Mark all items in the list complete
+     */
     toggleCompleteAll: new Rx.Subject(),
+
+    /**
+     * Remove a single item from the list
+     */
     destroy: new Rx.Subject(),
+
+    /**
+     * Remove all items in the list that have already been marked complete
+     */
     destroyCompleted: new Rx.Subject()
 };
 
