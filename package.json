@@ -22,7 +22,6 @@
     "grunt": "^0.4.5",
     "grunt-babel": "^6.0.0",
     "grunt-browserify": "^4.0.1",
-    "grunt-cli": "^0.1.13",
     "grunt-contrib-clean": "^0.7.0",
     "grunt-contrib-compass": "^1.0.4",
     "grunt-contrib-copy": "^0.8.2",
@@ -33,6 +32,9 @@
     "jshint-stylish": "^2.1.0",
     "livereload": "^0.4.0",
     "matchdep": "^1.0.0"
+  },
+  "scripts":{
+    "run":"grunt default"
   },
   "author": "Mike Nimer"
 }
